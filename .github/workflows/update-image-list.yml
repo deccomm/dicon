@@ -1,0 +1,30 @@
+name: Update Image List
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - 'assets/**'
+
+jobs:
+  update-image-list:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      
+      - name: Set up Node.js
+        uses: actions/setup-node@v2
+        with:
+          node-version: '14'
+          
+      - name: Generate image list JSON
+        run: node ./generateImageList.js
+        
+      - name: Commit and push if changed
+        run: |
+          git config --global user.email "action@github.com"
+          git config --global user.name "GitHub Action"
+          git add assets/imageList.json
+          git commit -m "Update image list JSON" -a || echo "No changes to commit"
+          git push
